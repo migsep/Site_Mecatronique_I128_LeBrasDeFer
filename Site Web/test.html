@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Bras de Fer - L'Ère de l'Automatisation</title>
+
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <style>
+        /* ---- DESIGN SYSTEM ---- */
+        :root {
+            --neon: #ff7a00;
+            --bg-deep: #000000;
+            --bg-card: #111111;
+            --border: rgba(255, 255, 255, 0.15);
+            --text-main: #f5f5f7;
+            --text-sub: #86868b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; background-color: var(--bg-deep); color: var(--text-main);
+            font-family: "Inter", sans-serif; overflow-x: hidden; font-size: 16px; line-height: 1.5;
+        }
+
+        h1, h2, h3, .tech-font { font-family: "Orbitron", sans-serif; letter-spacing: -1px; }
+        
+        /* FOND AMBIANT */
+        .ambient-light {
+            position: fixed;
+            top: -20%; left: 50%;
+            transform: translateX(-50%);
+            width: 80vw; height: 80vh;
+            background: radial-gradient(circle, rgba(255, 122, 0, 0.08), transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* STYLE TAG */
+        .section-tag {
+            color: var(--neon);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            display: block;
+            font-weight: 600;
+            font-family: "Inter", sans-serif;
+        }
+
+        /* ---- LAYOUT ---- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+        
+        .section-full {
+            min-height: 100vh; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center;
+            padding: 100px 0; position: relative;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 700; margin-bottom: 20px; line-height: 1.1;
+        }
+
+        .text-body {
+            font-size: 1.3rem; color: var(--text-sub); font-weight: 400;
+            max-width: 800px; margin: 0 auto; line-height: 1.6;
+        }
+
+        .highlight { color: var(--text-main); font-weight: 600; }
+        .neon-text { color: var(--neon); text-shadow: 0 0 20px rgba(255, 122, 0, 0.5); }
+
+        /* ---- GRILLES ---- */
+        .grid-feature {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+            align-items: center; margin: 150px 0; text-align: left;
+        }
+        
+        .feature-card {
+            background: var(--bg-card); border-radius: 40px; padding: 60px;
+            border: 1px solid var(--border); overflow: hidden; position: relative;
+        }
+
+        .stats-wrapper {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; width: 100%;
+        }
+
+        .stat-number { font-size: 5rem; font-family: "Orbitron"; font-weight: 900; color: var(--text-main); line-height: 1; }
+        .stat-label { font-size: 1.2rem; color: var(--text-sub); margin-top: 10px; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* ---- BOUTON RETOUR ---- */
+        .btn-back {
+            display: inline-block; padding: 15px 40px; border-radius: 50px;
+            border: 1px solid var(--neon); color: var(--neon); text-decoration: none;
+            font-family: "Orbitron"; transition: 0.3s; margin-top: 50px;
+        }
+        .btn-back:hover { background: var(--neon); color: black; box-shadow: 0 0 30px rgba(255, 122, 0, 0.5); }
+
+        /* ---- DIVIDER LASER ---- */
+        .divider {
+            margin: 0 auto 60px auto;
+            height: 2px;
+            width: 100%;
+            max-width: 1000px;
+            background: linear-gradient(90deg, transparent, #ff9900, transparent);
+            filter: drop-shadow(0 0 6px #ff9900);
+        }
+
+        /* ---- 3D ---- */
+        #viewer-container {
+            width: 100%; height: 80vh; border-radius: 40px;
+            background: radial-gradient(circle at center, #1a1a1a, #000);
+            border: 1px solid #333; position: relative; overflow: hidden;
+        }
+
+        /* Container spécifique pour le canvas Three.js */
+        #three-canvas-container {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 1s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        /* Loader CSS simple pour remplacer le slot poster */
+        #loader-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #666; font-family: 'Orbitron'; font-size: 1.2rem; pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        @media (max-width: 900px) {
+            .section-title { font-size: 2.5rem; }
+            .grid-feature, .stats-wrapper { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+            .feature-card { padding: 40px 20px; }
+            .section-full { min-height: auto; padding: 80px 0; }
+            .reveal { opacity: 1 !important; transform: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-light"></div>
+
+    <header style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;" class="reveal">
+        <span class="section-tag">Ingénierie de Précision S1</span>
+        
+        <h1 style="font-size: 5rem; margin: 20px 0; color: #ff7a00; text-shadow: 0 0 30px rgba(255, 122, 0, 0.6), 0 0 60px rgba(255, 122, 0, 0.3); letter-spacing: -2px; line-height: 1.1; font-family: 'Orbitron'; font-weight: 900;">
+            LE BRAS<br>DE FER.
+        </h1>
+
+        <p style="font-size: 1.5rem; color: var(--text-sub); max-width: 600px;">
+            L'automatisation ne consiste pas seulement à aller plus vite.<br>
+            Il s'agit d'atteindre la perfection, cube après cube.
+        </p>
+    </header>
+
+    <section class="container reveal" style="margin-bottom: 200px;">
+        <div class="feature-card" style="text-align: center; background: transparent; border: none;">
+            <h2 class="section-title">L'Ordre naît du Chaos.</h2>
+            <p class="text-body">
+                Dans l'industrie du jouet, la gestion des assortiments de couleurs est un défi logistique permanent. 
+                L'erreur humaine est inévitable, coûteuse et lente.
+                <br><br>
+                Notre réponse est une machine capable de voir, d'analyser et d'agir avec une constance absolue. 
+                <span class="highlight">Le Bras de Fer</span> n'est pas un simple outil. C'est le nouveau chef d'orchestre de votre ligne de production.
+                Il transforme un flux désordonné de cubes en paquets parfaitement triés, sans jamais faillir.
+            </p>
+        </div>
+    </section>
+
+    <section class="container reveal">
+        <div class="grid-feature">
+            <div style="order: 1;">
+                <h2 class="section-title">Il voit tout.<br><span style="color: #444;">En temps réel.</span></h2>
+                <p class="text-body" style="margin: 0;">
+                    Doté de capteurs optiques avancés, le robot analyse instantanément le spectre colorimétrique de chaque objet.
+                    <br><br>
+                    Rouge. Vert. Bleu.
+                    <br><br>
+                    Rien ne lui échappe. Il identifie la nature du cube sur le convoyeur avant même que celui-ci ne s'arrête, permettant une prise de décision en quelques millisecondes.
+                </p>
+            </div>
+            <div class="feature-card" style="height: 400px; display: flex; align-items: center; justify-content: center; order: 2;">
+                <div style="display: flex; gap: 20px;">
+                    <div style="width: 60px; height: 60px; background: #ff3b30; border-radius: 50%; box-shadow: 0 0 30px #ff3b30;"></div>
+                    <div style="width: 60px; height: 60px; background: #4cd964; border-radius: 50%; box-shadow: 0 0 30px #4cd964;"></div>
+                    <div style="width: 60px; height: 60px; background: #007aff; border-radius: 50%; box-shadow: 0 0 30px #007aff;"></div>
+                </div>
+                <p style="position: absolute; bottom: 30px; font-family: 'Orbitron'; font-size: 0.8rem; opacity: 0.7;">CAPTEURS OPTIQUES ACTIFS</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container reveal">
+        <div class="grid-feature">
+            <div class="feature-card" style="height: 500px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="stat-number">±2<span style="font-size: 2rem;">mm</span></div>
+                <div class="stat-label">Tolérance de Pose</div>
+                <div style="width: 80%; height: 1px; background: #333; margin: 40px 0;"></div>
+                <div class="stat-number">80<span style="font-size: 2rem;">cm</span></div>
+                <div class="stat-label">Portée Hémisphérique</div>
+            </div>
+            <div>
+                <h2 class="section-title">Contrôle Absolu.<br><span class="neon-text">Sur 3 Axes.</span></h2>
+                <p class="text-body" style="margin: 0;">
+                    La puissance n'est rien sans la maîtrise. Nous avons conçu une architecture cinématique à 3 axes capable de couvrir une zone de travail hémisphérique de 80 cm.
+                    <br><br>
+                    Qu'il s'agisse d'aller chercher un cube en bout de course ou de le déposer délicatement dans un packaging étroit, le mouvement est fluide, calculé, et répétable à l'infini avec une précision de 2 millimètres.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container section-full reveal">
+        <h2 class="section-title" style="margin-bottom: 60px;">Le Rythme de la Production.</h2>
+        <div class="stats-wrapper">
+            <div class="feature-card">
+                <h3 class="tech-font" style="color: var(--neon); font-size: 1.5rem;">VITESSE</h3>
+                <p class="stat-number" style="font-size: 3.5rem; margin: 20px 0;">&lt;30s</p>
+                <p style="color: #999;">Temps de cycle complet pour garantir le débit de la ligne.</p>
+            </div>
+            <div class="feature-card">
+                <h3 class="tech-font" style="color: var(--neon); font-size: 1.5rem;">FORCE</h3>
+                <p class="stat-number" style="font-size: 3.5rem; margin: 20px 0;">200g</p>
+                <p style="color: #999;">Charge utile calibrée pour la manipulation des cubes en bois.</p>
+            </div>
+            <div class="feature-card">
+                <h3 class="tech-font" style="color: var(--neon); font-size: 1.5rem;">INTÉGRATION</h3>
+                <p class="stat-number" style="font-size: 3.5rem; margin: 20px 0;">SYNC</p>
+                <p style="color: #999;">Dialogue en temps réel avec le convoyeur pour un flux continu.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container reveal" style="margin-bottom: 100px;">
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h2 class="section-title" style="font-size: 4rem;">Rencontrez le Futur.</h2>
+            <p class="text-body">Interagissez avec l'architecture mécanique finale.</p>
+        </div>
+
+        <div id="viewer-container">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80%; background: radial-gradient(circle, rgba(255,122,0,0.05), transparent 60%); pointer-events: none;"></div>
+            
+            <div id="three-canvas-container"></div>
+            <div id="loader-text">INITIALISATION DU SYSTÈME 3D...</div>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 80px 0; margin-top: 100px;">
+        <div class="divider"></div>
+        <a href="Details_Du_Projet.html" class="btn-back">Retour au Menu Principal</a>
+    </footer>
+
+    <style>
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+    </style>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        /* --- LOGIQUE D'ANIMATION DE PAGE (ORIGINALE) --- */
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const hiddenElements = document.querySelectorAll('.reveal');
+        document.body.style.opacity = '1';
+
+        if (hiddenElements.length > 0) {
+            setTimeout(() => {
+                hiddenElements[0].classList.add('active');
+            }, 100);
+        }
+        hiddenElements.forEach(el => observer.observe(el));
+
+
+        /* --- LOGIQUE THREE.JS (REMPLACEMENT) --- */
+        
+        // Configuration de la scène
+        const container = document.getElementById('three-canvas-container');
+        const loaderText = document.getElementById('loader-text');
+        
+        const scene = new THREE.Scene();
+        // Pas de background color défini pour garder la transparence et voir le dégradé CSS
+        
+        // Caméra
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.set(2, 1.5, 3.5); // Position ajustée pour un look similaire
+
+        // Renderer (avec transparence et encodage correct)
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; // Match tonemapping original
+        renderer.toneMappingExposure = 1.0;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // Lumières (pour simuler l'ambiance et "Environment Image: Neutral")
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Lumière douce
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        mainLight.position.set(5, 10, 7);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 1024;
+        mainLight.shadow.mapSize.height = 1024;
+        scene.add(mainLight);
+
+        // Lumière d'accentuation (Orange Neon pour coller au thème)
+        const rimLight = new THREE.SpotLight(0xff7a00, 5);
+        rimLight.position.set(-5, 5, -5);
+        rimLight.lookAt(0,0,0);
+        scene.add(rimLight);
+
+        // Contrôles
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableZoom = false; // "disable-zoom" de l'original
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 2.0;
+        
+        // Limites orbitales (similaire à min/max-camera-orbit)
+        controls.maxPolarAngle = Math.PI / 2; // Empêche de passer sous le sol
+
+        // Chargement du modèle
+        const loader = new GLTFLoader();
+        
+        loader.load('robot_complet.glb', (gltf) => {
+            const model = gltf.scene;
+            scene.add(model);
+            
+            // 1. Calculer la boîte englobante (Bounding Box) du modèle
+            const box = new THREE.Box3().setFromObject(model);
+            const size = box.getSize(new THREE.Vector3());
+            const center = box.getCenter(new THREE.Vector3());
+            
+            // 2. Recentrer le modèle parfaitement en (0,0,0)
+            // Cela compense si l'origine du modèle 3D n'était pas au centre
+            model.position.x += (model.position.x - center.x);
+            model.position.y += (model.position.y - center.y);
+            model.position.z += (model.position.z - center.z);
+            
+            // 3. Calculer la distance idéale de caméra pour tout faire rentrer
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const fov = camera.fov * (Math.PI / 180);
+            let cameraZ = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
+            
+            // On recule la caméra d'un facteur (ici x1.3) pour laisser un peu de marge autour
+            cameraZ *= 1.3; 
+
+            // 4. Mettre à jour la position de la caméra et des contrôles
+            // On place la caméra en hauteur (Y) et en recul (Z)
+            camera.position.set(0, size.y / 2, cameraZ); 
+            
+            // On force la caméra à regarder le centre du modèle
+            const newTarget = new THREE.Vector3(0, 0, 0);
+            camera.lookAt(newTarget);
+            controls.target.copy(newTarget);
+            controls.update();
+
+            // Ombres sur tous les sous-éléments du robot
+            model.traverse((node) => {
+                if (node.isMesh) {
+                    node.castShadow = true;
+                    node.receiveShadow = true;
+                }
+            });
+
+            // Cacher le texte de chargement
+            loaderText.style.opacity = '0';
+
+        }, undefined, (error) => {
+            console.error('Erreur chargement modèle:', error);
+            loaderText.innerText = "ERREUR CHARGEMENT 3D";
+            loaderText.style.color = "red";
+        });
+
+        // Gestion du redimensionnement
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // Logique d'Auto-Rotation Intelligente (Replication du script original)
+        let idleTimer;
+
+        function startIdleTimer() {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                controls.autoRotate = true;
+            }, 5000); // 5 secondes d'attente avant reprise
+        }
+
+        function stopAutoRotate() {
+            controls.autoRotate = false;
+            clearTimeout(idleTimer);
+        }
+
+        // Écouteurs pour l'interaction utilisateur sur le canvas
+        container.addEventListener('mousedown', stopAutoRotate);
+        container.addEventListener('touchstart', stopAutoRotate);
+        container.addEventListener('mouseup', startIdleTimer);
+        container.addEventListener('touchend', startIdleTimer);
+        // Détection du scroll/zoom ou autre interaction controls
+        controls.addEventListener('start', stopAutoRotate);
+        controls.addEventListener('end', startIdleTimer);
+
+        // Boucle d'animation
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+    </script>
+
+</body>
+</html>
