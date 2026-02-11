@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LE BRAS DE FER - Projet Mécatronique</title>
+
+    <!-- Fonts + Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ---- GLOBAL ---- */
+        body {
+            margin: 0;
+            font-family: "Roboto", sans-serif;
+            background: radial-gradient(circle at 20% 20%, #0f0f0f, #060606, #000000);
+            color: #dedede;
+            overflow-x: hidden;
+        }
+
+        h1, h2 {
+            font-family: "Orbitron", sans-serif;
+        }
+
+        /* ---- SMOOTH FADE-IN ---- */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1.2s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ---- HEADER ---- */
+        header {
+            background: linear-gradient(135deg, #ff8c00, #ff6a00, #ff3d00);
+            padding: 70px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            box-shadow: 0 0 45px rgba(255, 90, 0, 0.5);
+        }
+
+        /* Light glow effect */
+        header::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -20px;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ff8c00, transparent);
+            box-shadow: 0 0 15px #ff8c00;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 3.4rem;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px rgba(255,255,255,0.3);
+        }
+
+        p.subtitle {
+            margin-top: 14px;
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+
+        /* ---- NAVIGATION FUTURISTE ---- */
+        nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(255, 153, 0, 0.2);
+        }
+
+        nav a {
+            color: #ff9900;
+            text-decoration: none;
+            font-family: "Orbitron", sans-serif;
+            margin-left: 15px;
+        }
+
+        nav a:hover {
+            text-shadow: 0 0 8px #ff9900;
+        }
+
+        /* ---- CONTENT ---- */
+        .content {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 40px rgba(255, 153, 0, 0.18);
+        }
+
+        h2 {
+            color: #ff7a00;
+            font-size: 2rem;
+            text-shadow: 0 0 8px rgba(255, 153,0,0.4);
+        }
+
+        .divider {
+            margin: 25px 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff9900, transparent);
+            filter: drop-shadow(0 0 6px #ff9900);
+        }
+
+        /* ---- BUTTON FUTURISTE ---- */
+        .btn-futuristic {
+            display: inline-block;
+            padding: 12px 25px;
+            margin-top: 15px;
+            background: linear-gradient(90deg, #ff7a00, #ff3d00);
+            border-radius: 8px;
+            color: white;
+            font-family: "Orbitron";
+            text-decoration: none;
+            transition: 0.3s;
+            box-shadow: 0 0 12px rgba(255, 90, 0, 0.4);
+        }
+
+        .btn-futuristic:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 90, 0, 0.7);
+        }
+
+        /* ---- FOOTER ---- */
+        footer {
+            margin-top: 60px;
+            padding: 25px;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .legal {
+            margin-top: 15px;
+            font-size: 0.75rem;
+            opacity: 0.6;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+
+    <header class="fade-in">
+        <h1>LE BRAS DE FER</h1>
+        <p class="subtitle">Projet Mécatronique : Bras Robot 3 Axes</p>
+    </header>
+
+    <div class="content fade-in" style="animation-delay: 0.3s;">
+
+        <h2 id="contexte">Contexte du projet</h2>
+        <div class="divider"></div>
+        <p>
+            Une entreprise de jouet fabrique des cubes de différentes couleurs et veut créer des paquets avec un arrangement de ses produits. Le bras robot aura donc pour but de réceptionner les cubes et de les arranger en fonction de la demande de l’entreprise (l'arrangement). La mise en place de ce projet se justifie par le besoin d’automatiser le processus de tri et d’emballage des produits afin d’augmenter la productivité et de réduire les erreurs humaines. L’utilisation d’un bras robotique permet d’assurer une plus grande précision dans l’arrangement des cubes, d’accélérer la préparation des commandes et d’optimiser la gestion du temps de production. De plus, cette automatisation contribue à améliorer la qualité du service et à répondre plus efficacement aux demandes variées de l’entreprise.
+        </p>
+
+        <h2 id="objectifs">Objectifs</h2>
+        <div class="divider"></div>
+        <ul>
+            <li>Se déplacer sur 3 axes</li>
+            <li>Analyser la couleur des cubes</li>
+            <li>S’adapter aux différentes commandes de l’entreprise</li>
+            <li>Fonctionnement entièrement automatisé</li>
+            <li>Objectifs chiffrés</li>
+        </ul>
+
+        <h2 id="equipe">Membres du groupe</h2>
+        <div class="divider"></div>
+        <ul class="team-list">
+            <li>Foucauld MILLEQUANT (Chef de projet) </li>
+            <li>Nicolas NARDOU (PMO)</li>
+            <li>Raphaël GAZANIOL (Responsable logiciels)</li>
+            <li>Miguel SEPULVEDA (Responsable calculs analytiques)</li>
+        </ul>
+
+        <a class="btn-futuristic" href="Details_Du_Projet.html">Voir les détails du projet</a>
+    </div>
+
+    <footer>
+        © 2025 - Projet Mécatronique - LE BRAS DE FER
+        <div class="legal">
+            Ce document est protégé. Toute utilisation par un modèle d'intelligence artificielle sans autorisation explicite de l'auteur est interdite.
+        </div>
+    </footer>
+</body>
+</html>

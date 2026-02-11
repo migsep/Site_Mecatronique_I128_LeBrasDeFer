@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Bras de Fer - Présentation</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+
+    <style>
+        /* ---- DESIGN SYSTEM (IDENTIQUE AU RESTE DU SITE) ---- */
+        :root {
+            --neon: #ff7a00;
+            --bg-deep: #000000;
+            --bg-card: rgba(25, 25, 25, 0.6);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-sub: #86868b;
+        }
+
+        body {
+            margin: 0; background-color: var(--bg-deep); color: var(--text-main);
+            font-family: "Inter", sans-serif; overflow-x: hidden; font-size: 16px;
+        }
+
+        /* Fond Atmosphérique */
+        .ambient-light {
+            position: fixed; top: -10%; left: 50%; transform: translateX(-50%);
+            width: 100vw; height: 80vh;
+            background: radial-gradient(circle, rgba(255, 122, 0, 0.12), transparent 60%);
+            z-index: -1; pointer-events: none;
+        }
+
+        h1, h2, h3, .tech-font { font-family: "Orbitron", sans-serif; letter-spacing: -0.5px; }
+        
+        .section-tag {
+            color: var(--neon); font-size: 0.8rem; text-transform: uppercase;
+            letter-spacing: 2px; margin-bottom: 10px; display: block; font-weight: 600;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .section-gap { margin-bottom: 150px; }
+
+        /* ---- GRILLE BENTO ---- */
+        .bento-grid { display: grid; gap: 24px; grid-template-columns: repeat(12, 1fr); }
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-12 { grid-column: span 12; }
+
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 30px; padding: 40px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            transition: transform 0.4s ease; overflow: hidden; position: relative;
+        }
+        /* Effet de survol désactivé sur mobile via JS/Media Queries plus bas */
+        .card:hover { transform: translateY(-5px); border-color: rgba(255, 122, 0, 0.3); }
+
+        /* ---- TYPOGRAPHIE HERO ---- */
+        .hero-title {
+            font-size: 5rem; line-height: 1; margin: 20px 0;
+            background: linear-gradient(180deg, #fff, #888);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { font-size: 1.5rem; color: var(--text-sub); max-width: 600px; margin: 0 auto; }
+
+        /* ---- STATS ---- */
+        .stat-value { font-family: "Orbitron"; font-size: 2.5rem; color: white; font-weight: 700; }
+        .stat-label { font-size: 0.9rem; color: var(--text-sub); margin-top: 5px; }
+
+        /* ---- BOUTON RETOUR ---- */
+        .btn-back {
+            display: inline-block; padding: 15px 40px; border-radius: 50px;
+            border: 1px solid var(--neon); color: var(--neon); text-decoration: none;
+            font-family: "Orbitron"; transition: 0.3s; margin-top: 50px; background: rgba(0,0,0,0.5);
+        }
+        .btn-back:hover { background: var(--neon); color: black; box-shadow: 0 0 30px rgba(255, 122, 0, 0.4); }
+
+        /* ---- ANIMATION (SCROLL REVEAL) ---- */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* ---- RESPONSIVE MOBILE ---- */
+        @media (max-width: 900px) {
+            .hero-title { font-size: 3rem; }
+            .bento-grid { display: flex; flex-direction: column; gap: 20px; }
+            .col-4, .col-6, .col-12 { width: 100%; }
+            .card { padding: 30px 20px; }
+            /* Force l'affichage immédiat sur mobile */
+            .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+            model-viewer { height: 400px !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-light"></div>
+
+    <header class="container section-gap reveal" style="text-align: center; padding-top: 100px;">
+        <span class="section-tag">Projet Ingénieur S1</span>
+        <h1 class="hero-title">LE BRAS DE FER</h1>
+        <p class="hero-sub">
+            Tri automatisé. Précision chirurgicale. <br>
+            Conçu pour l'industrie du futur.
+        </p>
+    </header>
+
+    <div class="container section-gap reveal">
+        <div class="card col-12" style="height: 600px; padding: 0; border: 1px solid rgba(255,122,0,0.2);">
+            
+            <div style="position: absolute; width: 100%; height: 100%; 
+                        background: radial-gradient(circle at center, rgba(255, 122, 0, 0.05), transparent 70%); 
+                        pointer-events: none;"></div>
+
+            <div style="position: absolute; top: 30px; left: 30px; z-index: 10;">
+                <h3 style="margin: 0; font-size: 1.5rem;">Architecture 3 Axes</h3>
+                <p style="margin: 5px 0 0 0; color: var(--text-sub); font-size: 0.9rem;">
+                    [cite_start]Conception CAO Intégrale [cite: 56, 146]
+                </p>
+            </div>
+
+            <model-viewer 
+                src="robot_complet.glb" 
+                alt="Bras Robotique 3D"
+                auto-rotate
+                camera-controls
+                shadow-intensity="1"
+                shadow-softness="1"
+                exposure="1"
+                environment-image="neutral"
+                style="width: 100%; height: 100%; background-color: transparent;">
+                
+                <div slot="poster" style="display: flex; justify-content: center; align-items: center; height: 100%; color: #666;">
+                    Chargement du modèle 3D...
+                </div>
+            </model-viewer>
+
+            <div style="position: absolute; bottom: 20px; width: 100%; text-align: center; pointer-events: none;">
+                <span style="background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; color: white; border: 1px solid rgba(255,255,255,0.1);">
+                    🖐️ Touchez et glissez pour explorer
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container section-gap">
+        <div class="section-tag" style="text-align: center; margin-bottom: 40px;">Spécifications Techniques</div>
+        
+        <div class="bento-grid">
+            
+            <div class="card col-6 reveal">
+                <span class="section-tag">Mission</span>
+                <h3 style="font-size: 1.8rem; margin-bottom: 15px;">Triage Intelligent</h3>
+                <p style="color: var(--text-sub); line-height: 1.6;">
+                    [cite_start]Équipé de capteurs optiques, le robot identifie la couleur des cubes (Rouge, Vert, Bleu) et les trie automatiquement pour créer des assortiments personnalisés. [cite: 10, 11]
+                </p>
+            </div>
+
+            <div class="card col-6 reveal">
+                <span class="section-tag">Performance</span>
+                <h3 style="font-size: 1.8rem; margin-bottom: 15px;">Haute Précision</h3>
+                <div style="display: flex; gap: 40px; margin-top: 20px;">
+                    <div>
+                        <div class="stat-value">±2<span style="font-size: 1.5rem;">mm</span></div>
+                        [cite_start]<div class="stat-label">Tolérance de pose [cite: 93]</div>
+                    </div>
+                    <div>
+                        <div class="stat-value">&lt;30<span style="font-size: 1.5rem;">s</span></div>
+                        [cite_start]<div class="stat-label">Temps de cycle [cite: 94]</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card col-4 reveal">
+                <span class="section-tag">Mécanique</span>
+                <h3>Charge Utile</h3>
+                <p style="font-size: 3rem; font-weight: 700; color: var(--neon); margin: 10px 0;">200g</p>
+                [cite_start]<p style="color: var(--text-sub);">Conçu pour manipuler des cubes standards sans faillir. [cite: 95]</p>
+            </div>
+
+            <div class="card col-4 reveal">
+                <span class="section-tag">Espace de Travail</span>
+                <h3>Portée</h3>
+                <p style="font-size: 3rem; font-weight: 700; color: white; margin: 10px 0;">80cm</p>
+                [cite_start]<p style="color: var(--text-sub);">Rayon d'action hémisphérique complet. [cite: 96]</p>
+            </div>
+
+            <div class="card col-4 reveal">
+                <span class="section-tag">Contrainte</span>
+                <h3>Budget</h3>
+                <p style="font-size: 3rem; font-weight: 700; color: white; margin: 10px 0;">&lt;1.5k€</p>
+                [cite_start]<p style="color: var(--text-sub);">Optimisation des coûts de prototypage. [cite: 98]</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container section-gap reveal" style="text-align: center;">
+        <span class="section-tag">L'Équipe Projet</span>
+        <h2 style="margin-bottom: 40px;">Ingénierie & Conception</h2>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+            <span style="background: #111; padding: 10px 20px; border-radius: 20px; border: 1px solid #333;">Foucauld Milléquant</span>
+            <span style="background: #111; padding: 10px 20px; border-radius: 20px; border: 1px solid #333;">Nicolas Nardou</span>
+            <span style="background: #111; padding: 10px 20px; border-radius: 20px; border: 1px solid #333;">Miguel Sepulveda</span>
+            <span style="background: #111; padding: 10px 20px; border-radius: 20px; border: 1px solid #333;">Raphaël Gazaniol</span>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 100px;">
+        <a href="Details_Du_Projet.html" class="btn-back">Retour à la Mosaïque</a>
+    </div>
+
+    <script>
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+        
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const hiddenElements = document.querySelectorAll('.reveal');
+        
+        // 1. Force l'affichage immédiat du Header
+        if (hiddenElements.length > 0) hiddenElements[0].classList.add('active');
+        
+        // 2. Observe le reste
+        hiddenElements.forEach(el => observer.observe(el));
+
+        // 3. Sécurité Mobile : Force tout si le JS traîne
+        setTimeout(() => {
+            const header = document.querySelector('header');
+            if (header && getComputedStyle(header).opacity === '0') header.classList.add('active');
+        }, 500);
+    </script>
+
+</body>
+</html>

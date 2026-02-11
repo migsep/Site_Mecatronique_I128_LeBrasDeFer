@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matériaux - LE BRAS DE FER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ---- CONFIGURATION PREMIUM ---- */
+        :root {
+            --neon: #ff7a00;
+            --bg-deep: #000000;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-sub: #86868b; /* Le gris "Apple" */
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: "Inter", sans-serif;
+            overflow-x: hidden;
+            font-size: 16px;
+        }
+
+        /* Arrière-plan atmosphérique */
+        .ambient-light {
+            position: fixed;
+            top: -20%; left: 50%;
+            transform: translateX(-50%);
+            width: 80vw; height: 80vh;
+            background: radial-gradient(circle, rgba(255, 122, 0, 0.08), transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ---- TYPOGRAPHIE ---- */
+        h1, h2, h3, .tech-font { font-family: "Orbitron", sans-serif; letter-spacing: -0.5px; }
+        
+        .section-tag {
+            color: var(--neon);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            display: block;
+            font-weight: 600;
+        }
+
+        /* ---- STRUCTURE (Apple Layout) ---- */
+        .container { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+        
+        .chapter { margin-bottom: 160px; } /* Grande respiration entre les sections */
+
+        .chapter-header { margin-bottom: 60px; max-width: 600px; }
+        .chapter-header h2 { font-size: 3rem; margin: 0 0 15px 0; line-height: 1.1; }
+        .chapter-header p { font-size: 1.3rem; color: var(--text-sub); font-weight: 300; }
+
+        /* ---- GRILLES BENTO ---- */
+        .bento-grid {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-8 { grid-column: span 8; }
+        .col-12 { grid-column: span 12; }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 35px;
+            backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; justify-content: space-between;
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Modification : Le survol générique ne change plus la bordure */
+        .card:hover { 
+            transform: translateY(-5px); 
+        }
+
+        /* NOUVEAU : Classe spécifique pour les box cliquables */
+        .card-interactive {
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+        
+        /* Seules ces cartes s'allument en orange */
+        .card-interactive:hover {
+            border-color: var(--neon);
+            box-shadow: 0 0 30px rgba(255, 122, 0, 0.15);
+            transform: translateY(-5px) scale(1.01);
+        }
+        .card.neon-border { border: 1px solid var(--neon); box-shadow: 0 0 40px rgba(255, 122, 0, 0.1); }
+
+        /* ---- DATA & VISUALS ---- */
+        .big-stat { font-size: 3.5rem; font-weight: 700; letter-spacing: -1px; margin: 10px 0; }
+        .stat-label { font-size: 0.9rem; color: var(--text-sub); }
+
+        .data-list { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; }
+        .data-row span:last-child { color: white; font-weight: 500; }
+        .data-row span:first-child { color: var(--text-sub); }
+
+        /* ---- IMAGES PLACEHOLDERS (Cadres) ---- */
+        .graph-frame {
+            width: 100%;
+            background: #0a0a0a;
+            border-radius: 16px;
+            border: 1px solid #222;
+            display: flex; align-items: center; justify-content: center;
+            color: #444; font-family: monospace; font-size: 0.8rem;
+            position: relative;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        /* Remplacer ces hauteurs par la taille de tes images */
+        .h-small { height: 200px; }
+        .h-medium { height: 350px; }
+        .h-large { height: 500px; }
+
+        /* ---- TABLEAU COMPARATIF ---- */
+        .compare-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .compare-table th { text-align: left; color: var(--text-sub); font-weight: 400; padding: 20px 10px; border-bottom: 1px solid var(--border); }
+        .compare-table td { padding: 20px 10px; border-bottom: 1px solid var(--border); font-size: 1.1rem; }
+        .good { color: #4caf50; }
+        .bad { color: #ff453a; }
+
+        /* ---- SCROLL REVEAL ---- */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 1s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* ---- FOOTER ---- */
+        .btn-back {
+            display: inline-block; padding: 15px 40px; border-radius: 50px;
+            border: 1px solid var(--neon); color: var(--neon); text-decoration: none;
+            font-family: "Orbitron"; transition: 0.3s; margin-top: 50px;
+        }
+        .btn-back:hover { background: var(--neon); color: black; box-shadow: 0 0 30px rgba(255, 122, 0, 0.5); }
+
+        @media (max-width: 900px) { .bento-grid { display: flex; flex-direction: column; } }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-light"></div>
+
+    <header style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;" class="reveal">
+        <span class="section-tag">Analyse Structurelle</span>
+        
+        <h1 style="font-size: 5rem; margin: 20px 0; color: #ff7a00; text-shadow: 0 0 30px rgba(255, 122, 0, 0.6), 0 0 60px rgba(255, 122, 0, 0.3); letter-spacing: -2px; line-height: 1.1;">
+            SÉLECTION<br>MATÉRIAUX
+        </h1>
+<!-- /*Optimisation masse/rigidité -->
+        <p style="font-size: 1.5rem; color: var(--text-sub); max-width: 600px;">
+            Basée sur les données de Granta EduPack et les stocks ICAM.
+        </p>
+    </header>
+
+    <div class="container">
+
+        <div class="chapter reveal">
+            <div class="chapter-header">
+                <h2>Choix ICAM.</h2>
+                <p>Trois solutions disponibles au magasin ICAM pour une poutre de 250mm.</p>
+            </div>
+
+            <div class="bento-grid">
+                <div class="card col-4">
+                    <div>
+                        <span class="section-tag">Impression 3D</span>
+                        <h3 class="interactive-title" onclick="openTextModal('content-pla')">PLA (Plein) <span style="font-family: serif; font-style: italic; font-weight: 700;">i</span></h3>
+                        <img src="cap1.png" class="graph-frame zoomable">
+                    </div>
+                    <div class="data-list">
+                        <div class="data-row"><span>Masse</span> <span>129 g</span></div>
+                        <div class="data-row"><span>Densité</span> <span>1290 kg/m³</span></div>
+                        <div class="data-row"><span>Moment d'inertie</span> <span>13 333 mm⁴</span></div>
+                    </div>
+                </div>
+
+                <div class="card col-4">
+                    <div>
+                        <span class="section-tag">Profilé Métallique</span>
+                        <h3 class="interactive-title" onclick="openTextModal('content-alu')">Aluminium <span style="font-family: serif; font-style: italic; font-weight: 700;">i</span></h3>
+                        <img src="cap2.png" class="graph-frame zoomable">
+                    </div>
+                    <div class="data-list">
+                        <div class="data-row"><span>Masse</span> <span>114 g</span></div>
+                        <div class="data-row"><span>Densité</span> <span>2700 kg/m³</span></div>
+                        <div class="data-row"><span>Moment d'inertie</span> <span>6 890 mm⁴</span></div>
+                    </div>
+                </div>
+
+                <div class="card col-4">
+                    <div>
+                        <span class="section-tag">Tube Métal</span>
+                        <h3 class="interactive-title" onclick="openTextModal('content-acier')">Acier <span style="font-family: serif; font-style: italic; font-weight: 700;">i</span></h3>
+                        <img src="cap3.png" class="graph-frame zoomable">
+                    </div>
+                    <div class="data-list">
+                        <div class="data-row"><span>Masse</span> <span class="bad">420 g</span></div>
+                        <div class="data-row"><span>Densité</span> <span>7800 kg/m³</span></div>
+                        <div class="data-row"><span>Moment d'inertie</span> <span>16 278 mm⁴</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chapter reveal">
+            <div class="chapter-header">
+                <h2>Performance.</h2>
+                <p>Résultats des simulations de contrainte.</p>
+            </div>
+
+            <div class="bento-grid">
+                <div class="card col-4 card-interactive" 
+                     onclick="if(!event.target.classList.contains('graph-frame') && !event.target.classList.contains('zoomable') && event.target.tagName !== 'IMG') openTextModal('content-configuration')">
+                    
+                    <span class="section-tag">Modèle Poutre</span>
+                    <h3>Configuration</h3>
+                    <img src="cap4.png" class="graph-frame zoomable">
+                    <p style="font-size: 0.9rem; color: var(--text-sub);">
+                        Modélisation : Encastrement avec charge ponctuelle en bout de bras et poids de la poutre.
+                    </p>
+                </div>
+
+                <div class="card col-4 card-interactive" 
+                    onclick="openTextModal('content-simulations')">
+    
+                    <span class="section-tag">Résultats</span>
+    
+                    <div style="display: flex; flex-direction: column; justify-content: center; height: 100%; padding-top: 10px;">
+        
+                        <div style="margin-bottom: 20px;">
+                            <span class="section-tag" style="color:#666; font-size:0.7rem; margin-bottom:8px; text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 4px;">SECTION (3) : CHARGE 1KG</span>
+            
+                            <div class="data-row"><span>Contrainte PLA</span> <span>31.6 MPa</span></div>
+                            <div class="data-row"><span>Contrainte Alu</span> <span>54.3 MPa</span></div>
+                            <div class="data-row"><span>Contrainte Acier</span> <span>120.9 MPa</span></div>
+                        </div>
+        
+                        <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;"></div>
+        
+                        <div>
+                            <span class="section-tag" style="color:#666; font-size:0.7rem; margin-bottom:8px; text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 4px;">SECTION (2) : CHARGE 1.25KG</span>
+            
+                            <div class="data-row"><span>Contrainte PLA</span> <span>32.1 MPa</span></div>
+                            <div class="data-row"><span>Contrainte Alu</span> <span>55.3 MPa</span></div>
+                            <div class="data-row"><span>Contrainte Acier</span> <span>121.5 MPa</span></div>
+                        </div>
+        
+                    </div>
+                </div>
+
+                <div class="card col-4 card-interactive" 
+                     onclick="if(!event.target.classList.contains('graph-frame') && !event.target.classList.contains('zoomable') && event.target.tagName !== 'IMG') openTextModal('content-analyse')">
+                    
+                    <span class="section-tag">Analyse Comparative</span>
+                    <h3>Sécurité vs Écologie</h3>
+                    <img src="cap5.png" class="graph-frame zoomable">
+                    <p style="font-size: 0.9rem; color: var(--text-sub);">
+                        Comparaison Alu (Violet) vs PLA (Bleu) vs Aciers (Vert). Le choix que nous retenons est donc les profilés en aluminium.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chapter reveal">
+            <div class="chapter-header">
+                <h2>L'Idéal Théorique.</h2>
+                <p>Exploration via Granta EduPack pour trouver le matériau parfait.</p>
+            </div>
+
+            <div class="bento-grid" style="margin-bottom: 24px;">
+                <div class="card col-12 card-interactive" 
+                     style="flex-direction: row; align-items: center; padding: 20px 40px;"
+                     onclick="openTextModal('content-criteres')">
+                    
+                    <div style="display: flex; align-items: center;">
+                        <span class="tech-font" style="margin-right: 15px;">CRITÈRES DE FILTRAGE :</span>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; margin-left: auto;">
+                        <span style="background: #222; padding: 8px 20px; border-radius: 20px; font-size: 0.9rem;">Limite Élastique > 35 MPa</span>
+                        <span style="background: #222; padding: 8px 20px; border-radius: 20px; font-size: 0.9rem;">Masse < 200g</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bento-grid">
+                <div class="card col-6 card-interactive" 
+                     onclick="if(!event.target.classList.contains('graph-frame') && !event.target.classList.contains('zoomable') && event.target.tagName !== 'IMG') openTextModal('content-etape1')">
+                    <span class="section-tag">Étape 1 : Vue Globale</span>
+                    <h3>Première comparaison</h3>
+                    <img src="cap6.png" class="graph-frame zoomable">
+                    <p style="font-size: 0.9rem; color: var(--text-sub);">
+                        Comparaison de plusieurs matériaux pour avoir une vision globale et faire ensuite un focus sur ce qui est intéressant.
+                    </p>
+                </div>
+
+                <div class="card col-6 card-interactive" 
+                     onclick="if(!event.target.classList.contains('graph-frame') && !event.target.classList.contains('zoomable') && event.target.tagName !== 'IMG') openTextModal('content-etape2')">
+                    <span class="section-tag">Étape 2 : Le Duel</span>
+                    <h3>Composite vs Magnésium</h3>
+                    <img src="cap7.png" class="graph-frame zoomable">
+                    <p style="font-size: 0.9rem; color: var(--text-sub);">
+                        Les composites offrent une meilleure résistance spécifique à densité égale.
+                    </p>
+                </div>
+
+                <div class="card col-6 card-interactive" 
+                     onclick="if(!event.target.classList.contains('graph-frame') && !event.target.classList.contains('zoomable') && event.target.tagName !== 'IMG') openTextModal('content-etape3')">
+                    <span class="section-tag">Étape 3 : Focus</span>
+                    <h3>Composite QI</h3>
+                    <img src="cap8.png" class="graph-frame zoomable">
+                    <p style="font-size: 0.9rem; color: var(--text-sub);">
+                        Comparaison des performances des composites dont la disposition d'étude est QI.
+                    </p>
+                </div>
+
+                <div class="card col-6 card-interactive" 
+                     onclick="if(!event.target.classList.contains('graph-frame') && !event.target.classList.contains('zoomable') && event.target.tagName !== 'IMG') openTextModal('content-etape4')">
+                    <span class="section-tag">Étape 4 : Réalité Économique</span>
+                    <h3>Analyse des Coûts</h3>
+                    <img src="cap9.png" class="graph-frame zoomable">
+                    <p style="font-size: 0.9rem; color: var(--text-sub);">
+                        Sélection de la fibre de verre (QI) pour son équilibre performance/coût.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chapter reveal">
+            <div class="chapter-header">
+                <h2>Conclusion Finale.</h2>
+                <p>Aluminium 6061 vs Composite Idéal.</p>
+            </div>
+
+            <div class="card col-12 neon-border" style="background: rgba(255, 122, 0, 0.02);">
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>PROPRIÉTÉ</th>
+                            <th style="color:white; font-weight:600;">ALU 6061 (CHOIX)</th>
+                            <th style="color:var(--text-sub)">COMPOSITE (IDÉAL)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Prix Matière</td>
+                            <td class="good">2.48 €/kg</td>
+                            <td class="bad">32.1 €/kg</td>
+                        </tr>
+                        <tr>
+                            <td>Masse Volumique</td>
+                            <td>2710 kg/m³</td>
+                            <td class="good">1860 kg/m³</td>
+                        </tr>
+                        <tr>
+                            <td>Limite Élastique</td>
+                            <td>259 MPa</td>
+                            <td>250 MPa</td>
+                        </tr>
+                        <tr>
+                            <td>CO2 (Production)</td>
+                            <td>9.34 kg/kg</td>
+                            <td class="good">6.52 kg/kg</td>
+                        </tr>
+                        <tr>
+                            <td>Recyclabilité</td>
+                            <td class="good">35% (Cycle Infini)</td>
+                            <td class="bad">1% (Difficile)</td>
+                        </tr>
+                        <tr>
+                            <td>Énergie Recyclage</td>
+                            <td class="good">51.6 MJ/kg</td>
+                            <td class="bad">84.7 MJ/kg</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 40px; text-align: center;">
+                    <span class="section-tag">CONCLUSION FINALE</span>
+                    <h3 style="font-size: 2rem; color: white;">ALUMINIUM 6061</h3>
+                    <p style="color: var(--text-sub); max-width: 700px; margin: 10px auto;">
+                        Malgré un poids légèrement supérieur, l'aluminium est retenu. Il est <strong>13x moins cher</strong>, disponible immédiatement à l'école, et son <strong>impact environnemental global</strong> est meilleur grâce à sa recyclabilité totale.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 100px;">
+            <a href="Details_Du_Projet.html" class="btn-back">Retour à la Mosaïque</a>
+        </div>
+
+    </div>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+    <style>
+    /* Le fond sombre flouté (Style Apple) */
+    #lightbox-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(15px); /* Effet verre fumé */
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        cursor: zoom-out;
+    }
+
+    #lightbox-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    /* L'image dans la lightbox */
+    #lightbox-img {
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain;
+        transform-origin: center center;
+        cursor: grab; /* Curseur main pour indiquer qu'on peut bouger */
+        transition: transform 0.1s ease-out; /* Transition rapide pour le drag */
+        user-select: none;
+    }
+
+    #lightbox-img:active {
+        cursor: grabbing;
+    }
+
+    /* Curseur sur les images du site pour indiquer qu'elles sont cliquables */
+    .zoomable {
+        cursor: zoom-in;
+        transition: transform 0.3s;
+    }
+    .zoomable:hover {
+        transform: scale(1.02); /* Petit effet au survol */
+    }
+</style>
+
+<div id="content-pla" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">PLA (Polylactic Acid)</h2>
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">Pour info :</p>
+    <p>Le PLA est un thermoplastique biodégradable issu de ressources renouvelables. Bien que facile à imprimer, il présente une température de transition vitreuse basse (60°C), ce qui limite son usage en environnement chaud.</p>
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">Etude du PLA :</p>
+    <p>Pour l’étude du PLA, nous allons supposer une poutre de section carrée de 20x20 mm et de remplissage à 100% pour pouvoir pouvoir négliger l’aspect fibraire de l’impression 3D et pouvoir appliquer par la suite la théorie des poutres.</p>
+</div>
+
+<div id="content-alu" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Aluminium 6061-T6</h2>
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">Pour info :</p>
+    <p>Cet alliage durci par précipitation (Magnésium/Silicium) est le standard aéronautique. Il offre un excellent compromis résistance/poids et s'usine facilement.</p>
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">Etude de l'aluminium :</p>
+    <p>Pour l’étude de l’aluminium, nous allons prendre un profilé d’aluminium tel que celui dans l'image ci-dessous.</p>
+</div>
+
+<div id="content-acier" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Acier de Construction</h2>
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">Pour info :</p>
+    <p>Bien que très résistant et peu coûteux, sa densité de 7800 kg/m³ peu pénaliser la dynamique d'un robot (inertie pouvant être trop forte pour les moteurs).</p>
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">Etude de l'acier :</p>
+    <p>Pour l’étude de l’acier, nous allons prendre un tube carré d’acier 30x30mm d’épaisseur 2mm tel que celui dans l'image ci-dessous.</p>
+</div>
+
+<div id="content-analyse" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Ashby Sécurité vs Écologie</h2>
+    
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">
+        Analyse :
+    </p>
+    
+    <p>On constate que la limite d’élasticité est largement supérieure à la contrainte pour les trois matériaux, avec une marge de sécurité plus importante pour l’aluminium et l’acier qu’avec le PLA.</p>
+    <p>Un critère important que nous devons prendre en compte est la masse du composant. Si on se réfère aux premiers calculs, on a vu que les tubes d’acier 30x30mm était plus de 3,5 fois plus lourds que les profilés d’aluminium 20x20mm. Entre l’aluminium et le PLA remplissage 100%, la masse est à peu près égale.</p>
+    <p>Concernant la fabrication des pièces, peu de modifications sont à entreprendre sur le profilé d’aluminium, seulement la découpe du profilé à la bonne longueur et un taraudage pour y fixer les servomoteurs. De même pour les tubes d’acier. Pour le PLA, il n’est pas sûr que nous puissions imprimer une barre de 25cm en une seule fois, ce qui nous obligerait à séparer chaque morceau du bras en plusieurs éléments. Cela risque de poser des problèmes de résistance ou de déformation du bras par exemple.</p>
+    <p>Concernant le PLA, il n’est pas recyclé à l’ICAM tandis que les profilés en aluminium ou acier pourraient être réutilisés les années suivantes pour de futurs projets. Toutefois, la fabrication du matériau doit également être prise en compte. Si on se réfère au graphique de Granta EduPack, le PLA et l’acier ont sensiblement le même impact en termes d’émissions de CO2 par kg tandis que la production d’aluminium rejette entre 2 et 7 fois plus de CO2. En revanche, nous avons besoin d’une masse d’aluminium au moins 3 fois plus faible que celle d’acier. ce qui réduit considérablement la différence d’impact environnemental.</p>
+    <p>Le choix que nous retenons est donc l’utilisation de profilés en aluminium d’une section de 20x20mm car il ne sont pas trop lourds, ils sont faciles à travailler et l’impact environnemental est le plus limité des 3.</p>
+
+</div>
+
+<div id="content-criteres" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Critères de Filtrage Granta EduPack</h2>
+    
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">
+        Pour la section (3) :
+    </p>
+    
+    <p>Pour l’élément 3, la contrainte en flexion sera donc soit 31,61 MPa. Sur Granta EduPack, on retient uniquement les matériaux dont la limite élastique est supérieure à 35 MPa pour avoir une marge de sécurité. On va également fixer une masse maximale de 200 g pour s’assurer que l’élément n’est pas trop lourd.</p>
+</div>
+
+<div id="content-etape1" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Étape 1 : Vue Globale </h2>
+    
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">
+        Analyse :
+    </p>
+    
+    <p>On constate que les matériaux naturels et la plupart des polymères sont à peine au-dessus de la limite élastique fixée. Un métal ou un composite permettrait d’avoir plus de marge. Il nous reste donc les alliages de magnésium et les composites en fibres de carbone ou de verre.</p>
+    <p>Pour avoir plus de détails sur les matériaux existants, on passe du level 2 au level 3 de Granta EduPack. On gardera uniquement les alliages de magnésium et les composites à matrice polymère pour l'étape 2.</p>
+
+</div>
+
+<div id="content-etape2" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Étape 2 : Le Duel </h2>
+    
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">
+        Analyse :
+    </p>
+    
+    <p>On remarque que les alliages de magnésium et les composites sont dans les mêmes zones de densité, en revanche les composites ont pour la plupart une meilleure limite d’élasticité. De plus, certains sont plus légers que les alliages de magnésium. On décidera donc de ne garder que les composites pour l'étape 3.</p>
+</div>
+
+<div id="content-etape3" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Étape 3 : Vainqueur Technique</h2>
+    
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">
+        Réduction du champ d'étude :
+    </p>
+    
+    <p>Comme la contrainte subie par la pièce est faible, on peut réduire notre champ d’étude aux composites dont la disposition d’étude est QI, même s’ils ont une moins bonne résistance que lorsque les fibres sont UD.</p>
+</div>
+
+<div id="content-etape4" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Étape 4 : Réalité Économique</h2>
+    
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">
+        Conclusion :
+    </p>
+    
+    <p>Le composite à matrice Époxy avec des fibres de verre semble être une bonne option. Il est dans la moyenne des autres composites en termes de densité, a une limite élastique largement suffisante pour notre application, et il fait partie des composites retenus les moins cher.</p>
+    <p style="text-decoration: underline; text-decoration-color: var(--neon); text-underline-offset: 5px;">C’est donc notre solution idéale.</p>
+</div>
+
+<div id="content-simulations" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Détails des Calculs</h2>
+
+
+    <div style="margin-bottom: 30px;">
+        <h3 style="font-size: 1rem; color: #888; margin-bottom: 10px;">1. Calculs littéraux</h3>
+        <img src="cap11.png" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+    </div>
+
+    <div style="margin-bottom: 30px;">
+        <h3 style="font-size: 1rem; color: #888; margin-bottom: 10px;">2. Section (3) (Charge 1kg)</h3>
+        <img src="cap12.png" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+    </div>
+
+    <div>
+        <h3 style="font-size: 1rem; color: #888; margin-bottom: 10px;">3. Section (2) (Charge 1,25kg)</h3>
+        <img src="cap13.png" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+    </div>
+</div>
+
+<div id="content-configuration" style="display: none;">
+    <h2 class="tech-font" style="color:var(--neon); margin-top:0;">Légende</h2>
+    
+
+    <div style="margin-top: 20px;">
+        <h3 style="font-size: 1rem; color: #888; margin-bottom: 10px;">Figure : Modèle poutre d’une section du bras robotique</h3>
+        <img src="cap10.png" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+    </div>
+</div>
+
+<script>
+    // 1. Création dynamique de la structure HTML de la Lightbox
+    const lightboxOverlay = document.createElement('div');
+    lightboxOverlay.id = 'lightbox-overlay';
+    
+    const lightboxImg = document.createElement('img');
+    lightboxImg.id = 'lightbox-img';
+    
+    // Ajout d'une instruction visuelle flottante (optionnel, pour l'UX)
+    const hint = document.createElement('div');
+    hint.innerHTML = "Molette : Zoom • Glisser : Déplacer • Clic : Fermer";
+    hint.style.cssText = "position:absolute; bottom:30px; color:rgba(255,255,255,0.6); font-family:'Inter'; font-size:0.9rem; pointer-events:none;";
+    
+    lightboxOverlay.appendChild(lightboxImg);
+    lightboxOverlay.appendChild(hint);
+    document.body.appendChild(lightboxOverlay);
+
+    // Variables pour la gestion du Zoom/Pan
+    let scale = 1;
+    let pointX = 0;
+    let pointY = 0;
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+    let isPanning = false; // Pour distinguer un clic d'un glisser
+
+    // 2. Fonction pour ouvrir la Lightbox
+    function openLightbox(src) {
+        lightboxImg.src = src;
+        lightboxOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Bloque le scroll du site
+        
+        // Reset des positions
+        scale = 1;
+        pointX = 0;
+        pointY = 0;
+        updateTransform();
+    }
+
+    // 3. Fonction pour fermer la Lightbox
+    function closeLightbox() {
+        lightboxOverlay.classList.remove('active');
+        document.body.style.overflow = ''; // Réactive le scroll
+        // Petit délai pour nettoyer la source
+        setTimeout(() => { lightboxImg.src = ''; }, 400);
+    }
+
+    // 4. Appliquer la transformation CSS
+    function updateTransform() {
+        lightboxImg.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+    }
+
+    // 5. Écouteurs d'événements sur les images du site
+    // (Note: Cela marchera dès que tu remplaceras les divs par des imgs avec la classe 'zoomable')
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('zoomable') || e.target.classList.contains('img-frame')) {
+            // Si c'est une image réelle
+            if (e.target.tagName === 'IMG') {
+                openLightbox(e.target.src);
+            } 
+            // Si c'est encore le placeholder div (juste pour tester le fond noir)
+            else if (e.target.tagName === 'DIV') {
+                console.log("Remplacez ce DIV par une IMG pour voir l'image.");
+            }
+        }
+    });
+
+    // 6. Gestion du Zoom (Molette)
+    lightboxOverlay.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY * -0.005; // Sensibilité du zoom
+        const newScale = Math.min(Math.max(1, scale + delta), 5); // Max zoom x5, Min x1
+        
+        scale = newScale;
+        
+        // Si on dézoome à fond, on recentre
+        if (scale === 1) {
+            pointX = 0;
+            pointY = 0;
+        }
+        
+        updateTransform();
+    });
+
+    // 7. Gestion du Déplacement (Drag & Drop)
+    lightboxImg.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        startX = e.clientX - pointX;
+        startY = e.clientY - pointY;
+        isDragging = true;
+        isPanning = false;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        // On considère que c'est un "pan" si on bouge de plus de quelques pixels
+        isPanning = true; 
+
+        // On ne peut déplacer que si on est zoomé
+        if (scale > 1) {
+            pointX = e.clientX - startX;
+            pointY = e.clientY - startY;
+            updateTransform();
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // 8. Gestion de la Fermeture (Clic simple uniquement)
+    lightboxOverlay.addEventListener('click', (e) => {
+        // On ferme SEULEMENT si on n'était pas en train de glisser l'image
+        if (!isPanning) {
+            closeLightbox();
+        }
+        // Reset du statut de pan pour le prochain clic
+        isPanning = false;
+    });
+
+</script>
+
+<style>
+    /* Style du titre cliquable */
+    .interactive-title {
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        transition: 0.3s;
+    }
+    .interactive-title:hover {
+        opacity: 0.8;
+        transform: translateX(10px); /* Petit mouvement vers la droite */
+    }
+    .interactive-title span {
+        font-size: 0.8rem;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        width: 20px; height: 20px;
+        display: flex; align-items: center; justify-content: center;
+        margin-left: 10px;
+        opacity: 0.5;
+    }
+
+    /* L'arrière-plan flouté de la modale texte */
+    #text-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(25px); /* Flou intense Apple style */
+        z-index: 10000; /* Au-dessus de tout */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+    }
+    
+    #text-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+/* La carte contenant le texte */
+    #text-card {
+        /* 1. Retour à l'opacité 0.8 (plus transparent) */
+        background: rgba(20, 20, 20, 0.8); 
+        
+        border: 1px solid rgba(255, 122, 0, 0.3);
+        box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        width: 90%;
+        max-width: 600px;
+        
+        /* Gestion de la hauteur et du scroll */
+        max-height: 80vh; 
+        overflow-y: auto;
+        
+        padding: 40px;
+        border-radius: 30px;
+        color: #eee;
+        transform: scale(0.9) translateY(20px);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-family: "Inter", sans-serif;
+        line-height: 1.8;
+    }
+
+    #text-overlay.active #text-card {
+        transform: scale(1) translateY(0);
+    }
+
+    /* --- SCROLLBAR PREMIUM CORRIGÉE --- */
+    
+    /* La barre globale */
+    #text-card::-webkit-scrollbar {
+        width: 6px; /* Plus fine pour l'élégance */
+    }
+
+    /* Le fond de la barre (La piste) */
+    #text-card::-webkit-scrollbar-track {
+        background: transparent; 
+        /* 2. L'astuce : on ajoute une marge en haut et en bas 
+           égale au rayon de courbure (border-radius) */
+        margin-block: 30px; 
+    }
+
+    /* Le curseur (La partie qui bouge) */
+    #text-card::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+
+    /* Interaction au survol */
+    #text-card::-webkit-scrollbar-thumb:hover {
+        background-color: var(--neon);
+    }
+</style>
+
+<div id="text-overlay">
+    <div id="text-card">
+        <div id="text-injection-point"></div>
+        <div style="margin-top: 30px; text-align: center; font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 1px;">
+            Cliquer pour fermer
+        </div>
+    </div>
+</div>
+
+<script>
+    const textOverlay = document.getElementById('text-overlay');
+    const textInjection = document.getElementById('text-injection-point');
+
+    // Fonction d'ouverture
+    window.openTextModal = function(contentId) {
+        // 1. Récupérer le contenu caché
+        const sourceContent = document.getElementById(contentId);
+        if(sourceContent) {
+            // 2. Injecter dans la modale
+            textInjection.innerHTML = sourceContent.innerHTML;
+            // 3. Afficher
+            textOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Bloquer le scroll
+        }
+    };
+
+    // Fonction de fermeture (clic n'importe où sur l'overlay)
+    textOverlay.addEventListener('click', function() {
+        textOverlay.classList.remove('active');
+        document.body.style.overflow = ''; // Réactiver le scroll
+    });
+</script>
+
+</body>
+</html>

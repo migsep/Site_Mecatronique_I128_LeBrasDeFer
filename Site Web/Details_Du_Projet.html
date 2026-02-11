@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails Techniques - LE BRAS DE FER</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Animation d'apparition futuriste --- */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1.2s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body {
+            margin: 0;
+            font-family: "Roboto", sans-serif;
+            background: radial-gradient(circle at 20% 20%, #0f0f0f, #060606, #000000);
+            color: #dedede;
+        }
+
+        h1 {
+            font-family: "Orbitron", sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            font-size: 2.8rem;
+            color: #ff7a00;
+            text-shadow: 0 0 10px rgba(255, 123, 0, 0.7);
+        }
+
+        /* --- grille parfaitement symétrique --- */
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 60px auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+        }
+
+        .zone {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
+            transition: 0.35s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #ff8a00;
+            font-family: "Orbitron", sans-serif;
+            font-size: 1.25rem;
+            box-shadow: 0 0 20px rgba(255, 123, 0, 0.164);
+        }
+
+        .zone:hover {
+            transform: scale(1.08);
+            border-color: #ff7a00;
+            box-shadow: 0 0 30px rgba(255, 123, 0, 0.45);
+        }
+
+        /* Style pour que le premier bouton soit centré sur toute la largeur */
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .return {
+            display: block;
+            text-align: center;
+            margin-top: 45px;
+            margin-bottom: 40px;
+            color: #ff7a00;
+            font-family: "Orbitron";
+            text-decoration: none;
+        }
+
+        .return:hover {
+            text-shadow: 0 0 10px #ff7a00;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 class="fade-in" style="animation-delay: 0.2s;">Détails Du Projet</h1>
+
+    <div class="container fade-in" style="animation-delay: 0.4s;">
+        <a class="zone full-width" href="Présentation_Générale.html">
+            Le Bras De Fer
+        </a>
+
+        <a class="zone" href="page-fonctionnement.html">
+            Fonctionnement<br><small>(schémas, explications)</small>
+        </a>
+
+        <a class="zone" href="page-cahier-charges.html">
+            Cahier des Charges
+        </a>
+
+        <a class="zone" href="Sélection_Des_Matériaux.html">
+            Sélection des matériaux
+        </a>
+
+        <a class="zone" href="page-moteurs.html">
+            Choix des moteurs
+        </a>
+    </div>
+
+    <a class="return fade-in" style="animation-delay: 0.6s;" href="Site_Web.html">⬅ Retour à l’accueil</a>
+
+</body>
+</html>

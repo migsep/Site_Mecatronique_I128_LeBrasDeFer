@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS R3 — Bras Robotique 3 Axes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --secondary: #ff6b35;
+            --accent-gold: #ffd700;
+            --dark: #0a0e1a;
+            --darker: #050812;
+            --light: #e8eef5;
+            --glow: rgba(0, 240, 255, 0.4);
+            --glow-orange: rgba(255, 107, 53, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(to bottom, rgba(10, 14, 26, 0.95), transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--glow);
+        }
+
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            margin-left: 3rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+        }
+
+        .hero-label {
+            font-size: 0.9rem;
+            letter-spacing: 6px;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 7rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.6s forwards;
+            text-shadow: 0 0 60px var(--glow);
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+            color: rgba(232, 238, 245, 0.8);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--darker);
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.2s forwards;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 40px var(--glow);
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px var(--glow);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 8rem 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.05), rgba(255, 107, 53, 0.05));
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+
+        .stat-item:hover::before {
+            left: 100%;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            color: rgba(232, 238, 245, 0.7);
+            font-weight: 500;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 8rem 5%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: rgba(232, 238, 245, 0.6);
+            margin-bottom: 5rem;
+            letter-spacing: 1px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+        }
+
+        .feature-card {
+            padding: 3rem;
+            background: linear-gradient(135deg, rgba(10, 14, 26, 0.8), rgba(5, 8, 18, 0.9));
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(255, 107, 53, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(0, 240, 255, 0.3);
+        }
+
+        .feature-card:hover::after {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(232, 238, 245, 0.7);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tech Specs */
+        .tech-specs {
+            padding: 8rem 5%;
+            background: linear-gradient(180deg, var(--darker) 0%, rgba(0, 240, 255, 0.03) 50%, var(--darker) 100%);
+        }
+
+        .specs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .specs-list {
+            list-style: none;
+        }
+
+        .spec-item {
+            padding: 2rem 0;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .spec-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: rgba(232, 238, 245, 0.6);
+        }
+
+        .spec-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .specs-visual {
+            position: relative;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border: 2px solid var(--primary);
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            right: 15%;
+            animation-delay: 1s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 15%;
+            left: 30%;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* 3D Viewer Section */
+        .viewer-section {
+            padding: 8rem 5%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .viewer-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .viewer-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: rgba(232, 238, 245, 0.6);
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+        }
+
+        .viewer-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(10, 14, 26, 0.9), rgba(5, 8, 18, 0.95));
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 30px 100px rgba(0, 240, 255, 0.4);
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 800px;
+            display: block;
+            cursor: grab;
+        }
+
+        #canvas3d:active {
+            cursor: grabbing;
+        }
+
+        .viewer-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            background: rgba(10, 14, 26, 0.9);
+            padding: 1.5rem 2rem;
+            border-radius: 50px;
+            border: 1px solid var(--primary);
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border: 1px solid var(--primary);
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .control-btn:hover {
+            background: var(--primary);
+            color: var(--darker);
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px var(--glow);
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 5%;
+            text-align: center;
+            border-top: 1px solid rgba(0, 240, 255, 0.2);
+            background: var(--darker);
+        }
+
+        .footer-text {
+            color: rgba(232, 238, 245, 0.5);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 4rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .stats {
+                gap: 2rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .specs-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .viewer-title {
+                font-size: 2.5rem;
+            }
+
+            #canvas3d {
+                height: 500px;
+            }
+
+            nav {
+                display: none;
+            }
+        }
+
+        /* Scroll Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="noise-overlay"></div>
+
+    <header>
+        <div class="logo">NEXUS</div>
+        <nav>
+            <a href="#features">CARACTÉRISTIQUES</a>
+            <a href="#specs">SPÉCIFICATIONS</a>
+            <a href="#3d">VISUALISATION</a>
+            <a href="#contact">CONTACT</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-label">SÉRIE PREMIUM</div>
+                <h1 class="hero-title">NEXUS R3</h1>
+                <p class="hero-subtitle">Bras Robotique 3 Axes Haute Précision</p>
+                <a href="#3d" class="cta-button">DÉCOUVRIR EN 3D</a>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats reveal">
+            <div class="stat-item">
+                <span class="stat-number">0.01<small>mm</small></span>
+                <span class="stat-label">PRÉCISION</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">20<small>kg</small></span>
+                <span class="stat-label">CHARGE UTILE</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">360°</span>
+                <span class="stat-label">ROTATION</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">1200<small>mm</small></span>
+                <span class="stat-label">PORTÉE</span>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <h2 class="section-title reveal">EXCELLENCE TECHNIQUE</h2>
+            <p class="section-subtitle reveal">Une ingénierie sans compromis</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">VITESSE EXTRÊME</h3>
+                    <p class="feature-description">Mouvements ultra-rapides avec une accélération de 15 m/s² pour une productivité maximale sans sacrifier la précision.</p>
+                </div>
+                
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">PRÉCISION ABSOLUE</h3>
+                    <p class="feature-description">Répétabilité de ±0.01mm grâce à des encodeurs haute résolution et une structure en alliage aérospatial.</p>
+                </div>
+                
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">IA INTÉGRÉE</h3>
+                    <p class="feature-description">Système de vision artificielle et apprentissage automatique pour une adaptation intelligente aux tâches complexes.</p>
+                </div>
+                
+                <div class="feature-card reveal">
+                    <div class="feature-icon">💎</div>
+                    <h3 class="feature-title">FINITION PREMIUM</h3>
+                    <p class="feature-description">Usiné CNC dans l'aluminium aérospatial avec anodisation titane et joints en fibre de carbone.</p>
+                </div>
+                
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🔋</div>
+                    <h3 class="feature-title">EFFICACITÉ ÉNERGÉTIQUE</h3>
+                    <p class="feature-description">Moteurs brushless optimisés et récupération d'énergie pour une consommation réduite de 40%.</p>
+                </div>
+                
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🛡️</div>
+                    <h3 class="feature-title">SÉCURITÉ MAXIMALE</h3>
+                    <p class="feature-description">Capteurs de force torque, arrêt d'urgence instantané et certification ISO 10218 pour une collaboration humain-robot.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Specs -->
+        <section id="specs" class="tech-specs">
+            <h2 class="section-title reveal">SPÉCIFICATIONS TECHNIQUES</h2>
+            <p class="section-subtitle reveal">Performance de niveau industriel</p>
+            
+            <div class="specs-container">
+                <ul class="specs-list reveal">
+                    <li class="spec-item">
+                        <span class="spec-label">Portée maximale</span>
+                        <span class="spec-value">1200 mm</span>
+                    </li>
+                    <li class="spec-item">
+                        <span class="spec-label">Charge utile</span>
+                        <span class="spec-value">20 kg</span>
+                    </li>
+                    <li class="spec-item">
+                        <span class="spec-label">Répétabilité</span>
+                        <span class="spec-value">±0.01 mm</span>
+                    </li>
+                    <li class="spec-item">
+                        <span class="spec-label">Axes de rotation</span>
+                        <span class="spec-value">3 axes</span>
+                    </li>
+                    <li class="spec-item">
+                        <span class="spec-label">Vitesse maximale</span>
+                        <span class="spec-value">3.5 m/s</span>
+                    </li>
+                    <li class="spec-item">
+                        <span class="spec-label">Accélération</span>
+                        <span class="spec-value">15 m/s²</span>
+                    </li>
+                    <li class="spec-item">
+                        <span class="spec-label">Protocole comm.</span>
+                        <span class="spec-value">EtherCAT</span>
+                    </li>
+                    <li class="spec-item">
+                        <span class="spec-label">Température</span>
+                        <span class="spec-value">-10°C à 50°C</span>
+                    </li>
+                </ul>
+                
+                <div class="specs-visual reveal">
+                    <div class="floating-shape"></div>
+                    <div class="floating-shape"></div>
+                    <div class="floating-shape"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3D Viewer Section -->
+        <section id="3d" class="viewer-section">
+            <h2 class="viewer-title reveal">EXPÉRIENCE 3D</h2>
+            <p class="viewer-subtitle reveal">Explorez le NEXUS R3 en détail</p>
+            
+            <div class="viewer-container reveal">
+                <canvas id="canvas3d"></canvas>
+                <div class="viewer-controls">
+                    <button class="control-btn" onclick="resetCamera()" title="Réinitialiser la vue">↺</button>
+                    <button class="control-btn" onclick="toggleAnimation()" title="Animation automatique" id="animBtn">▶</button>
+                    <button class="control-btn" onclick="changeColor()" title="Changer la couleur">🎨</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p class="footer-text">NEXUS ROBOTICS © 2026 — INNOVATION SANS LIMITE</p>
+    </footer>
+
+    <script>
+        // Scroll Reveal Animation
+        const reveals = document.querySelectorAll('.reveal');
+        
+        function checkReveal() {
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', checkReveal);
+        checkReveal();
+
+        // Three.js 3D Robot Arm
+        let scene, camera, renderer, robotGroup;
+        let base, arm1, arm2, arm3, gripper;
+        let isAnimating = false;
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let currentColor = 0;
+        const colors = [
+            { main: 0x00f0ff, accent: 0xff6b35 },
+            { main: 0xff6b35, accent: 0xffd700 },
+            { main: 0xffd700, accent: 0x00f0ff },
+            { main: 0x9d00ff, accent: 0x00f0ff }
+        ];
+
+        function init3D() {
+            const canvas = document.getElementById('canvas3d');
+            const container = canvas.parentElement;
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0e1a);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                50,
+                container.offsetWidth / container.offsetHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(8, 5, 8);
+            camera.lookAt(0, 2, 0);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                antialias: true,
+                alpha: true 
+            });
+            renderer.setSize(container.offsetWidth, 800);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            
+            const mainLight = new THREE.DirectionalLight(0x00f0ff, 1);
+            mainLight.position.set(5, 10, 5);
+            mainLight.castShadow = true;
+            scene.add(mainLight);
+            
+            const accentLight = new THREE.DirectionalLight(0xff6b35, 0.8);
+            accentLight.position.set(-5, 5, -5);
+            scene.add(accentLight);
+            
+            const rimLight = new THREE.DirectionalLight(0xffd700, 0.6);
+            rimLight.position.set(0, 3, -8);
+            scene.add(rimLight);
+            
+            // Create Robot
+            createRobot();
+            
+            // Grid
+            const gridHelper = new THREE.GridHelper(20, 40, 0x00f0ff, 0x0a0e1a);
+            gridHelper.material.opacity = 0.2;
+            gridHelper.material.transparent = true;
+            scene.add(gridHelper);
+            
+            // Mouse controls
+            canvas.addEventListener('mousedown', onMouseDown);
+            canvas.addEventListener('mousemove', onMouseMove);
+            canvas.addEventListener('mouseup', onMouseUp);
+            canvas.addEventListener('wheel', onWheel);
+            
+            // Touch controls
+            canvas.addEventListener('touchstart', onTouchStart);
+            canvas.addEventListener('touchmove', onTouchMove);
+            canvas.addEventListener('touchend', onTouchEnd);
+            
+            // Resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Animation loop
+            animate();
+        }
+
+        function createRobot() {
+            robotGroup = new THREE.Group();
+            
+            // Base
+            const baseGeometry = new THREE.CylinderGeometry(0.8, 1, 0.5, 32);
+            const baseMaterial = new THREE.MeshStandardMaterial({
+                color: colors[currentColor].main,
+                metalness: 0.9,
+                roughness: 0.2,
+                emissive: colors[currentColor].main,
+                emissiveIntensity: 0.2
+            });
+            base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = 0.25;
+            base.castShadow = true;
+            robotGroup.add(base);
+            
+            // Arm 1 (vertical)
+            const arm1Geometry = new THREE.BoxGeometry(0.4, 3, 0.4);
+            const arm1Material = new THREE.MeshStandardMaterial({
+                color: 0x1a1f2e,
+                metalness: 0.95,
+                roughness: 0.1
+            });
+            arm1 = new THREE.Mesh(arm1Geometry, arm1Material);
+            arm1.position.y = 2;
+            arm1.castShadow = true;
+            robotGroup.add(arm1);
+            
+            // Joint 1
+            const joint1Geometry = new THREE.SphereGeometry(0.35, 32, 32);
+            const joint1Material = new THREE.MeshStandardMaterial({
+                color: colors[currentColor].accent,
+                metalness: 0.9,
+                roughness: 0.2,
+                emissive: colors[currentColor].accent,
+                emissiveIntensity: 0.3
+            });
+            const joint1 = new THREE.Mesh(joint1Geometry, joint1Material);
+            joint1.position.y = 3.5;
+            joint1.castShadow = true;
+            robotGroup.add(joint1);
+            
+            // Arm 2
+            const arm2Geometry = new THREE.BoxGeometry(0.3, 2.5, 0.3);
+            arm2 = new THREE.Mesh(arm2Geometry, arm1Material);
+            arm2.position.set(0, 4.75, 0);
+            arm2.rotation.z = Math.PI / 6;
+            arm2.castShadow = true;
+            robotGroup.add(arm2);
+            
+            // Joint 2
+            const joint2 = new THREE.Mesh(joint1Geometry.clone(), joint1Material);
+            joint2.position.set(0.65, 5.9, 0);
+            joint2.scale.set(0.8, 0.8, 0.8);
+            joint2.castShadow = true;
+            robotGroup.add(joint2);
+            
+            // Arm 3
+            const arm3Geometry = new THREE.BoxGeometry(0.25, 2, 0.25);
+            arm3 = new THREE.Mesh(arm3Geometry, arm1Material);
+            arm3.position.set(1.3, 6.9, 0);
+            arm3.rotation.z = -Math.PI / 4;
+            arm3.castShadow = true;
+            robotGroup.add(arm3);
+            
+            // End effector
+            const gripperGeometry = new THREE.CylinderGeometry(0.2, 0.15, 0.8, 32);
+            const gripperMaterial = new THREE.MeshStandardMaterial({
+                color: colors[currentColor].main,
+                metalness: 0.95,
+                roughness: 0.1,
+                emissive: colors[currentColor].main,
+                emissiveIntensity: 0.4
+            });
+            gripper = new THREE.Mesh(gripperGeometry, gripperMaterial);
+            gripper.position.set(2.05, 7.6, 0);
+            gripper.rotation.z = Math.PI / 2;
+            gripper.castShadow = true;
+            robotGroup.add(gripper);
+            
+            // Gripper fingers
+            const fingerGeometry = new THREE.BoxGeometry(0.1, 0.4, 0.05);
+            const finger1 = new THREE.Mesh(fingerGeometry, joint1Material);
+            finger1.position.set(2.45, 7.6, 0.15);
+            robotGroup.add(finger1);
+            
+            const finger2 = new THREE.Mesh(fingerGeometry, joint1Material);
+            finger2.position.set(2.45, 7.6, -0.15);
+            robotGroup.add(finger2);
+            
+            // Accent rings
+            for (let i = 0; i < 3; i++) {
+                const ringGeometry = new THREE.TorusGeometry(0.5 + i * 0.15, 0.02, 16, 100);
+                const ringMaterial = new THREE.MeshStandardMaterial({
+                    color: colors[currentColor].main,
+                    emissive: colors[currentColor].main,
+                    emissiveIntensity: 0.5,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.position.y = 0.5;
+                ring.rotation.x = Math.PI / 2;
+                robotGroup.add(ring);
+            }
+            
+            scene.add(robotGroup);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (isAnimating) {
+                robotGroup.rotation.y += 0.005;
+                
+                // Animate arms
+                const time = Date.now() * 0.001;
+                arm2.rotation.z = Math.PI / 6 + Math.sin(time * 0.5) * 0.3;
+                arm3.rotation.z = -Math.PI / 4 + Math.cos(time * 0.7) * 0.2;
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        function onMouseDown(event) {
+            isDragging = true;
+            previousMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
+
+        function onMouseMove(event) {
+            if (isDragging) {
+                const deltaMove = {
+                    x: event.clientX - previousMousePosition.x,
+                    y: event.clientY - previousMousePosition.y
+                };
+                
+                robotGroup.rotation.y += deltaMove.x * 0.01;
+                robotGroup.rotation.x += deltaMove.y * 0.01;
+                
+                previousMousePosition = {
+                    x: event.clientX,
+                    y: event.clientY
+                };
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+        }
+
+        function onWheel(event) {
+            event.preventDefault();
+            camera.position.z += event.deltaY * 0.01;
+            camera.position.z = Math.max(5, Math.min(15, camera.position.z));
+        }
+
+        function onTouchStart(event) {
+            if (event.touches.length === 1) {
+                isDragging = true;
+                previousMousePosition = {
+                    x: event.touches[0].clientX,
+                    y: event.touches[0].clientY
+                };
+            }
+        }
+
+        function onTouchMove(event) {
+            if (isDragging && event.touches.length === 1) {
+                const deltaMove = {
+                    x: event.touches[0].clientX - previousMousePosition.x,
+                    y: event.touches[0].clientY - previousMousePosition.y
+                };
+                
+                robotGroup.rotation.y += deltaMove.x * 0.01;
+                robotGroup.rotation.x += deltaMove.y * 0.01;
+                
+                previousMousePosition = {
+                    x: event.touches[0].clientX,
+                    y: event.touches[0].clientY
+                };
+            }
+        }
+
+        function onTouchEnd() {
+            isDragging = false;
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('canvas3d').parentElement;
+            camera.aspect = container.offsetWidth / 800;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.offsetWidth, 800);
+        }
+
+        function resetCamera() {
+            camera.position.set(8, 5, 8);
+            camera.lookAt(0, 2, 0);
+            robotGroup.rotation.set(0, 0, 0);
+        }
+
+        function toggleAnimation() {
+            isAnimating = !isAnimating;
+            const btn = document.getElementById('animBtn');
+            btn.textContent = isAnimating ? '⏸' : '▶';
+        }
+
+        function changeColor() {
+            currentColor = (currentColor + 1) % colors.length;
+            
+            // Update materials
+            base.material.color.setHex(colors[currentColor].main);
+            base.material.emissive.setHex(colors[currentColor].main);
+            
+            gripper.material.color.setHex(colors[currentColor].main);
+            gripper.material.emissive.setHex(colors[currentColor].main);
+            
+            robotGroup.children.forEach(child => {
+                if (child.geometry && child.geometry.type === 'SphereGeometry') {
+                    child.material.color.setHex(colors[currentColor].accent);
+                    child.material.emissive.setHex(colors[currentColor].accent);
+                }
+                if (child.geometry && child.geometry.type === 'TorusGeometry') {
+                    child.material.color.setHex(colors[currentColor].main);
+                    child.material.emissive.setHex(colors[currentColor].main);
+                }
+            });
+        }
+
+        // Initialize 3D on load
+        window.addEventListener('load', init3D);
+    </script>
+</body>
+</html>
